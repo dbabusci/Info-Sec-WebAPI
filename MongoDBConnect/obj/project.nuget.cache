@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "B5M1PNofoHjhFWjPqZuDjBBMX1RHnlPWIVgykoNRDDlHgz/jUMnfDxZ9Dk3q0Wq0sgrKCqNlP4okOAmeK3RnsQ==",
+  "dgSpecHash": "L9Fejq+gCS7Wxj7zycZZnQO+RL2hYD/1hVIkhZoUuUsetz/P6vg2KC7fs+USJw1K9eKlc5O2U+XIJTW1SCx7+g==",
   "success": true,
   "projectFilePath": "/home/dominic/Documents/GitHub/Info-Sec-WebAPI/MongoDBConnect/MongoDBConnect.csproj",
   "expectedPackageFiles": [
