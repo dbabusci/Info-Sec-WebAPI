@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/dominic/Documents/GitHub/Info-Sec-WebAPI/connect-api/connect-api.csproj": {}
+    "/home/dominic/Documents/GitHub/Info-Sec-WebAPI/MongoDBConnect/MongoDBConnect.csproj": {}
   },
   "projects": {
-    "/home/dominic/Documents/GitHub/Info-Sec-WebAPI/connect-api/connect-api.csproj": {
+    "/home/dominic/Documents/GitHub/Info-Sec-WebAPI/MongoDBConnect/MongoDBConnect.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/dominic/Documents/GitHub/Info-Sec-WebAPI/connect-api/connect-api.csproj",
-        "projectName": "connect-api",
-        "projectPath": "/home/dominic/Documents/GitHub/Info-Sec-WebAPI/connect-api/connect-api.csproj",
+        "projectUniqueName": "/home/dominic/Documents/GitHub/Info-Sec-WebAPI/MongoDBConnect/MongoDBConnect.csproj",
+        "projectName": "MongoDBConnect",
+        "projectPath": "/home/dominic/Documents/GitHub/Info-Sec-WebAPI/MongoDBConnect/MongoDBConnect.csproj",
         "packagesPath": "/home/dominic/.nuget/packages/",
-        "outputPath": "/home/dominic/Documents/GitHub/Info-Sec-WebAPI/connect-api/obj/",
+        "outputPath": "/home/dominic/Documents/GitHub/Info-Sec-WebAPI/MongoDBConnect/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/dominic/.nuget/NuGet/NuGet.Config"
@@ -43,10 +43,6 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
-            "Microsoft.AspNetCore.OpenApi": {
-              "target": "Package",
-              "version": "[8.0.4, )"
-            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.4.0, )"
