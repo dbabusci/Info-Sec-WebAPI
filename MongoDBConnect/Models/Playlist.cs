@@ -10,8 +10,6 @@ public class Playlist
     [BsonRepresentation(BsonType.ObjectId)]
     public string ID {get; set;} = null!; //might be wierd based off how it is stored in db and table
 
-    public string User {get; set;} = null!;
-
     [BsonElement("website-name")] //is baded off of what the db field is called?
     [JsonPropertyName("website-name")] //same here
     public List<string> WebsiteName {get; set;} = null!;
