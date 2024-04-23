@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDBConnect.Services;
 using MongoDBConnect.Models;
 using ZstdSharp.Unsafe;
+using System.Diagnostics.Eventing.Reader;
 
 namespace MongoDBConnect.Controllers;
 [Controller]
 [Route("api/[controller]")]
 //NO DATA VALIDATION
 //LOOK INTO AFTER MVP
-public class PlaylistController: Controller {
+public class PlaylistController: ControllerBase {
 
     private readonly ApplicationServices _applicationServices;
 
@@ -19,9 +20,17 @@ public class PlaylistController: Controller {
 
     //read
     [HttpGet]
-    public async Task<List<Playlist>> GetPasswords() 
+    public async Task<List<Playlist>> GetPasswords() => await _applicationServices.GetAsync();
+
+    [HttpGet("{id:length(24)}")]
+    public async Task<ActionResult<Playlist>> GetPassword(string id) 
     {
-        return await _applicationServices.GetAsync();
+        var playlist = await _applicationServices.GetAsync(id);
+        if(playlist is null) 
+        {
+            return NotFound();
+        }
+        return playlist; 
     }
 
     //create
@@ -29,21 +38,33 @@ public class PlaylistController: Controller {
     public async Task<IActionResult> PostPasswords([FromBody] Playlist playlist) 
     {
         await _applicationServices.CreateAsync(playlist);
-        return CreatedAtAction(nameof(GetPasswords), new { id = playlist.ID}, playlist);
+        return CreatedAtAction(nameof(GetPasswords), new { id = playlist._id}, playlist);
     }
 
     //update
     [HttpPut("{id}")] //look what id is in there thing
-    public async Task<IActionResult> AddPasswords(string id, [FromBody] string websiteName, [FromBody] string websiteUsername, [FromBody] string websitePassword)
+    public async Task<IActionResult> AddPasswords(string id, Playlist updatePlaylist)
     {
-        await _applicationServices.AddToPlaylistAsync(id, websiteName, websiteUsername, websitePassword);
+        var playlist = await _applicationServices.GetAsync(id);
+        if(playlist is null)
+        {
+            return NotFound();
+        }
+        updatePlaylist._id = playlist._id;
+        await _applicationServices.UpdateAsync(id, updatePlaylist);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     {
+        var playlist = await _applicationServices.GetAsync(id);
+        if(playlist is null)
+        {
+            return NotFound();
+        }
         await _applicationServices.DeleteAsync(id);
+
         return NoContent();
     }
 }

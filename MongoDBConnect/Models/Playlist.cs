@@ -8,18 +8,22 @@ public class Playlist
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string ID {get; set;} = null!; //might be wierd based off how it is stored in db and table
+    public string? _id {get; set;} = null!; //might be wierd based off how it is stored in db and table
 
-    [BsonElement("website-name")] //is baded off of what the db field is called?
+    [BsonElement("user")]
+    [JsonPropertyName("user")]
+    public string user {get; set;} = null;
+
+    [BsonElement("website-name")] //is based off of what the db field is called?
     [JsonPropertyName("website-name")] //same here
-    public List<string> WebsiteName {get; set;} = null!;
+    public string WebsiteName {get; set;} = null!;
 
     [BsonElement("website-username")]
     [JsonPropertyName("website-username")]
-    public List<string> WebsiteUsername {get; set;} = null!;
+    public string WebsiteUsername {get; set;} = null!;
 
     [BsonElement("website-password")]
     [JsonPropertyName("website-password")]
-    public List<string> WebsitePassword {get; set;} = null!;
+    public string WebsitePassword {get; set;} = null!;
 
 }
