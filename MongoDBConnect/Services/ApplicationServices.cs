@@ -54,6 +54,8 @@ public class ApplicationServices
 
     public async Task<Playlist?> GetAsync(string id) => await _PlaylistCollection.Find(x => x._id == id).FirstOrDefaultAsync();
 
+    public async Task<List<Playlist>> GetUserEntriesAsync(string user) => await _PlaylistCollection.Find(x => x.user == user).ToListAsync();
+
     public async Task CreateAsync(Playlist newEntry) => await _PlaylistCollection.InsertOneAsync(newEntry);
 
     public async Task UpdateAsync(string id, Playlist updatedEntry) => await _PlaylistCollection.ReplaceOneAsync(x => x._id == id, updatedEntry);

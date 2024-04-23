@@ -33,6 +33,10 @@ public class PlaylistController: ControllerBase {
         return playlist; 
     }
 
+    //Gets a document by the username
+    [HttpGet("user:length(7)")]
+    public async Task<List<Playlist>> GetUserEntries(string user) => await _applicationServices.GetUserEntriesAsync(user);
+
     //create
     [HttpPost]
     public async Task<IActionResult> PostPasswords([FromBody] Playlist playlist) 
