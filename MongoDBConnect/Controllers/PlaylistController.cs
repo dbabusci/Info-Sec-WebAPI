@@ -4,10 +4,12 @@ using MongoDBConnect.Services;
 using MongoDBConnect.Models;
 using ZstdSharp.Unsafe;
 using System.Diagnostics.Eventing.Reader;
+using Microsoft.AspNetCore.Cors;
 
 namespace MongoDBConnect.Controllers;
 [Controller]
 [Route("api/[controller]")]
+[EnableCors("ReactApp")]
 //NO DATA VALIDATION
 //LOOK INTO AFTER MVP
 public class PlaylistController: ControllerBase {
