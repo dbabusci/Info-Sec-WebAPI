@@ -14,16 +14,16 @@ public class Playlist
     [JsonPropertyName("user")]
     public string user {get; set;} = null;
 
-    [BsonElement("website-name")] //is based off of what the db field is called?
-    [JsonPropertyName("website-name")] //same here
+    [BsonElement("websiteName")] //is based off of what the db field is called?
+    [JsonPropertyName("websiteName")] //same here
     public string WebsiteName {get; set;} = null!;
 
-    [BsonElement("website-username")]
-    [JsonPropertyName("website-username")]
+    [BsonElement("websiteUsername")]
+    [JsonPropertyName("websiteUsername")]
     public string WebsiteUsername {get; set;} = null!;
 
-    [BsonElement("website-password")]
-    [JsonPropertyName("website-password")]
+    [BsonElement("websitePassword")]
+    [JsonPropertyName("websitePassword")]
     public string WebsitePassword {get; set;} = null!;
 
 }
