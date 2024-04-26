@@ -3,60 +3,115 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using System.Diagnostics.Eventing.Reader;
+using System.Security.Cryptography;
+using Microsoft.Extensions.ObjectPool;
+using System.Text;
 
 namespace MongoDBConnect.Services;
 
 public class ApplicationServices 
 {
     private readonly IMongoCollection<Playlist> _PlaylistCollection;
+    private static byte[] Key;
+    private static byte[] IV;
 
     public ApplicationServices(IOptions<MongoDBSettings> mongoDBSettings) 
     {
         MongoClient client = new MongoClient(mongoDBSettings.Value.Connection); //was connection URI in guide dc
         IMongoDatabase database = client.GetDatabase(mongoDBSettings.Value.DatabaseName);
         _PlaylistCollection = database.GetCollection<Playlist>(mongoDBSettings.Value.CollectionName);
-    }
-    /*
-    public async Task CreateAsync(Playlist playlist) 
-    {
-        await _PlaylistCollection.InsertOneAsync(playlist);
-        return;
+
+        using(Aes aesAlg = Aes.Create())
+        {
+            Key = aesAlg.Key;
+            IV = aesAlg.IV;
+        } 
     }
 
-    public async Task<List<Playlist>> GetAsync()
+    static byte[] EncryptString(string PlainText, byte[] Key, byte[] IV) 
     {
-        return await _PlaylistCollection.Find(new BsonDocument()).ToListAsync();
+        byte[] encrypted;
+
+        using(Aes aesAlg = Aes.Create())
+        {
+            aesAlg.Key = Key; 
+            aesAlg.IV = IV;
+            ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+
+            using(MemoryStream m = new MemoryStream())
+            {
+                using(CryptoStream c = new CryptoStream(m, encryptor, CryptoStreamMode.Write))
+                {
+                    using(StreamWriter s = new StreamWriter(c))
+                    {
+                        s.Write(PlainText);
+                    }
+                    encrypted = m.ToArray();
+                }
+            }
+        }
+        return encrypted;
     }
 
-    public async Task AddToPlaylistAsync(string id, string user, string websiteName, string websiteUsername, string websitePassword)
+    static string DecryptString(byte[] CipherText, byte[] Key, byte[] IV)
     {
-        FilterDefinition<Playlist> filter = Builders<Playlist>.Filter.Eq("ID", id); //in db or playliost
-        UpdateDefinition<Playlist> updateUser = Builders<Playlist>.Update.AddToSet<string>("User", websiteName);
-        UpdateDefinition<Playlist> updateName = Builders<Playlist>.Update.AddToSet<string>("WebsiteName", websiteName);
-        UpdateDefinition<Playlist> updateUsername = Builders<Playlist>.Update.AddToSet<string>("WebsiteUsername", websiteUsername); //will these even work
-        UpdateDefinition<Playlist> updatePassword = Builders<Playlist>.Update.AddToSet<string>("WebsitePasswords", websitePassword);
-        await _PlaylistCollection.UpdateOneAsync(filter, updateUser);
-        await _PlaylistCollection.UpdateOneAsync(filter, updateName);
-        await _PlaylistCollection.UpdateOneAsync(filter, updateUsername);//huh wierd idk
-        await _PlaylistCollection.UpdateOneAsync(filter, updatePassword);
-        return;
+        if(CipherText == null) {
+            Console.WriteLine("Null in decrypt");
+        }
+
+        string PlainText = "";
+
+        using(Aes aesAlg =  Aes.Create())
+        {
+            aesAlg.Key = Key;
+            aesAlg.IV = IV;
+            ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+
+            using(MemoryStream m = new MemoryStream(CipherText))
+            {
+                using(CryptoStream c = new CryptoStream(m, decryptor, CryptoStreamMode.Read))
+                {
+                    using(StreamReader s = new StreamReader(c))
+                    {
+                        PlainText = s.ReadToEnd();
+                    }
+                }
+            }
+        }
+        return PlainText;
     }
 
-    public async Task DeleteAsync(string id) 
-    {
-        FilterDefinition<Playlist> filter = Builders<Playlist>.Filter.Eq("ID", id); //in db or playliost
-        await _PlaylistCollection.DeleteOneAsync(filter);
-        return;
+    public async Task<List<Playlist>> GetAsync() {
+        List<Playlist> avail = await _PlaylistCollection.Find(_ => true).ToListAsync();
+        byte[] s;
+        for(int i = 0; i < avail.Count; ++i){
+            s = Encoding.UTF8.GetBytes(avail[i].WebsitePassword);
+            avail[i].WebsitePassword = DecryptString(s, Key, IV);
+        }
+        return avail;
     }
-    */
-
-    public async Task<List<Playlist>> GetAsync() => await _PlaylistCollection.Find(_ => true).ToListAsync();
 
     public async Task<Playlist?> GetAsync(string id) => await _PlaylistCollection.Find(x => x._id == id).FirstOrDefaultAsync();
 
-    public async Task<List<Playlist>> GetUserEntriesAsync(string user) => await _PlaylistCollection.Find(x => x.user == user).ToListAsync();
+    public async Task<List<Playlist>> GetUserEntriesAsync(string user) {
+        List<Playlist> avail = await _PlaylistCollection.Find(x => x.user == user).ToListAsync();
+        byte[] s;
+        for(int i = 0; i < avail.Count; ++i) {
+            s = Encoding.UTF8.GetBytes(avail[i].WebsitePassword);
+            avail[i].WebsitePassword = DecryptString(s, Key, IV);
+        }
+        return avail;
+    }
 
-    public async Task CreateAsync(Playlist newEntry) => await _PlaylistCollection.InsertOneAsync(newEntry);
+    public async Task CreateAsync(Playlist newEntry) {
+        string s = newEntry.WebsitePassword;
+        Console.WriteLine(s);
+        byte[] b = EncryptString(s, Key, IV);
+        Console.WriteLine(b);
+        newEntry.WebsitePassword = DecryptString(b, Key, IV);
+        Console.WriteLine(newEntry.WebsitePassword);
+        await _PlaylistCollection.InsertOneAsync(newEntry);
+    } 
 
     public async Task UpdateAsync(string id, Playlist updatedEntry) => await _PlaylistCollection.ReplaceOneAsync(x => x._id == id, updatedEntry);
 
