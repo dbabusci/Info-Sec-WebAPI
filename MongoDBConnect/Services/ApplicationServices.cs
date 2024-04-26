@@ -82,13 +82,7 @@ public class ApplicationServices
     }
 
     public async Task<List<Playlist>> GetAsync() {
-        List<Playlist> avail = await _PlaylistCollection.Find(_ => true).ToListAsync();
-        byte[] s;
-        for(int i = 0; i < avail.Count; ++i){
-            s = Encoding.UTF8.GetBytes(avail[i].WebsitePassword);
-            avail[i].WebsitePassword = DecryptString(s, Key, IV);
-        }
-        return avail;
+        return await _PlaylistCollection.Find(_ => true).ToListAsync();
     }
 
     public async Task<Playlist?> GetAsync(string id) => await _PlaylistCollection.Find(x => x._id == id).FirstOrDefaultAsync();
@@ -97,19 +91,21 @@ public class ApplicationServices
         List<Playlist> avail = await _PlaylistCollection.Find(x => x.user == user).ToListAsync();
         byte[] s;
         for(int i = 0; i < avail.Count; ++i) {
-            s = Encoding.UTF8.GetBytes(avail[i].WebsitePassword);
+            s = Convert.FromBase64String(avail[i].WebsitePassword);
             avail[i].WebsitePassword = DecryptString(s, Key, IV);
         }
         return avail;
     }
 
+    //Clean this up when functional
     public async Task CreateAsync(Playlist newEntry) {
         string s = newEntry.WebsitePassword;
-        Console.WriteLine(s);
+        //Console.WriteLine(s);
         byte[] b = EncryptString(s, Key, IV);
-        Console.WriteLine(b);
-        newEntry.WebsitePassword = DecryptString(b, Key, IV);
-        Console.WriteLine(newEntry.WebsitePassword);
+        //Console.WriteLine(b);
+        string r = Convert.ToBase64String(b);
+        newEntry.WebsitePassword = r;
+        //Console.WriteLine(newEntry.WebsitePassword);
         await _PlaylistCollection.InsertOneAsync(newEntry);
     } 
 

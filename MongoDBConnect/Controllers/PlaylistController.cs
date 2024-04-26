@@ -36,7 +36,7 @@ public class PlaylistController: ControllerBase {
     }
 
     //Gets a document by the username
-    [HttpGet("user:length(7)")]
+    [HttpGet("{user}")]
     public async Task<List<Playlist>> GetUserEntries(string user) => await _applicationServices.GetUserEntriesAsync(user);
 
     //create
