@@ -25,17 +25,6 @@ public class PlaylistController: ControllerBase {
     [HttpGet]
     public async Task<List<Playlist>> GetPasswords() => await _applicationServices.GetAsync();
 
-    [HttpGet("{id:length(24)}")]
-    public async Task<ActionResult<Playlist>> GetPassword(string id) 
-    {
-        var playlist = await _applicationServices.GetAsync(id);
-        if(playlist is null) 
-        {
-            return NotFound();
-        }
-        return playlist; 
-    }
-
     //Gets a document by the username
     [HttpGet("{user}")]
     public async Task<List<Playlist>> GetUserEntries(string user) => await _applicationServices.GetUserEntriesAsync(user);
@@ -46,32 +35,5 @@ public class PlaylistController: ControllerBase {
     {
         await _applicationServices.CreateAsync(playlist);
         return CreatedAtAction(nameof(GetPasswords), new { id = playlist._id}, playlist);
-    }
-
-    //update
-    [HttpPut("{id}")] //look what id is in there thing
-    public async Task<IActionResult> AddPasswords(string id, Playlist updatePlaylist)
-    {
-        var playlist = await _applicationServices.GetAsync(id);
-        if(playlist is null)
-        {
-            return NotFound();
-        }
-        updatePlaylist._id = playlist._id;
-        await _applicationServices.UpdateAsync(id, updatePlaylist);
-        return NoContent();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(string id)
-    {
-        var playlist = await _applicationServices.GetAsync(id);
-        if(playlist is null)
-        {
-            return NotFound();
-        }
-        await _applicationServices.DeleteAsync(id);
-
-        return NoContent();
     }
 }
