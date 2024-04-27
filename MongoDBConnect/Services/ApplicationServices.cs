@@ -6,6 +6,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Security.Cryptography;
 using Microsoft.Extensions.ObjectPool;
 using System.Text;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 namespace MongoDBConnect.Services;
 
