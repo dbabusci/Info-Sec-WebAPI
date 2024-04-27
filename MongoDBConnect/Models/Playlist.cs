@@ -12,7 +12,7 @@ public class Playlist
 
     [BsonElement("user")]
     [JsonPropertyName("user")]
-    public string user {get; set;} = null;
+    public string user {get; set;} = null!; //changed from working, shoudl do anything right?
 
     [BsonElement("websiteName")] //is based off of what the db field is called?
     [JsonPropertyName("websiteName")] //same here

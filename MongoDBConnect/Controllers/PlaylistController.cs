@@ -16,7 +16,8 @@ public class PlaylistController: ControllerBase {
 
     private readonly ApplicationServices _applicationServices;
 
-    public PlaylistController(ApplicationServices applicationServices){
+    public PlaylistController(ApplicationServices applicationServices)
+    {
         _applicationServices = applicationServices;
     }
 
