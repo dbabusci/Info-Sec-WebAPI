@@ -82,8 +82,15 @@ public class ApplicationServices
         return PlainText;
     }
 
-    public async Task<List<Playlist>> GetAsync() {
-        return await _PlaylistCollection.Find(_ => true).ToListAsync();
+    public async Task<List<Playlist>> GetAsync() 
+    {
+        //why do I have to do this
+        var r = await _PlaylistCollection.Find(_ => true).ToListAsync();
+        for(int i = 0; i < r.Count; ++i)
+        {
+            r[i].WebsitePassword = "....";
+        }
+        return r;
     }
 
     public async Task<Playlist?> GetAsync(string id) => await _PlaylistCollection.Find(x => x._id == id).FirstOrDefaultAsync();
